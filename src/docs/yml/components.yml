@@ -1,0 +1,37 @@
+components:
+  parameters:
+    PageNumber:
+      name: page
+      in: query
+      description: Page number
+      schema:
+        type: integer
+        minimum: 1
+
+    PageLimit:
+      name: limit
+      in: query
+      description: Number of customers per page
+      schema:
+        type: integer
+        minimum: 5
+        maximum: 20
+
+    IsDownload:
+      name: isDownload
+      in: query
+      description: Get all data without pagination
+      schema:
+        type: boolean
+
+  responses:
+    DuplicateEmail:
+      description: Duplicate Email
+    Unauthorized:
+      description: Unauthorized
+    Forbidden:
+      description: Forbidden
+    NotFound:
+      description: Not Found
+    BadRequest:
+      description: Bad Request
