@@ -5,7 +5,11 @@ import { transformErrorUtils, transformResponseUtils } from '../utils';
 import { IOptionsWithPopulate } from '../interfaces';
 import { IUser } from '../interfaces/users';
 
-const { create, updateUserByQuery, getAllUsers, getUserByQuery } = userService;
+// Counters for tracking API calls
+let addCount = 0;
+let updateCount = 0;
+
+const { create, updateUserByQuery, getAllUsers, getUserByQuery, getUserCounts } = userService;
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -19,6 +23,9 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     } as unknown as IUser;
 
     await create(createBody);
+
+    // Increment add count
+    addCount++;
 
     res.json(
       transformResponseUtils({
@@ -48,6 +55,9 @@ const updateById = async (req: Request, res: Response, next: NextFunction) => {
     const query = { _id: userId };
 
     await updateUserByQuery(query, updateBody);
+
+    // Increment update count
+    updateCount++;
 
     res.json(
       transformResponseUtils({
@@ -141,4 +151,22 @@ const userSearch = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export { createUser, updateById, readAllUsers, readById, userSearch };
+const userCounts = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const users = await getUserCounts();
+
+    res.json(
+      transformResponseUtils({
+        result: {
+          users,
+          addAPICalls: addCount,
+          updateAPICalls: updateCount,
+        },
+      }),
+    );
+  } catch (error) {
+    next(transformErrorUtils(error));
+  }
+};
+
+export { createUser, updateById, readAllUsers, readById, userSearch, userCounts };
